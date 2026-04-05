@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+    <title>Переводчик Seedance 2.0</title>
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+        body {
+            font-family: system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f0ede8;
+            margin: 0;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .card {
+            background: white;
+            max-width: 550px;
+            width: 100%;
+            border-radius: 24px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.08);
+            padding: 24px 20px 28px;
+        }
+        h1 {
+            font-size: 24px;
+            font-weight: 600;
+            margin: 0 0 6px 0;
+        }
+        .sub {
+            color: #6b5b4e;
+            font-size: 13px;
+            margin-bottom: 24px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e5ddd4;
+        }
+        .input-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: 500;
+            font-size: 13px;
+            color: #4a3a2c;
+            display: block;
+            margin-bottom: 6px;
+        }
+        input {
+            width: 100%;
+            padding: 14px 16px;
+            font-size: 16px;
+            border: 1px solid #d4c9be;
+            border-radius: 20px;
+            background: white;
+            outline: none;
+            font-family: inherit;
+        }
+        input:focus {
+            border-color: #b97f3a;
+        }
+        .result {
+            background: #f7f2ea;
+            border-radius: 20px;
+            padding: 16px;
+            margin: 16px 0 12px;
+        }
+        .result-label {
+            font-size: 11px;
+            font-weight: 600;
+            color: #a07d58;
+            margin-bottom: 8px;
+            letter-spacing: 0.5px;
+        }
+        .translation {
+            font-size: 22px;
+            font-weight: 600;
+            word-break: break-word;
+            color: #2c241a;
+            line-height: 1.3;
+        }
+        .hint {
+            font-size: 12px;
+            color: #aa927c;
+            background: #faf7f2;
+            padding: 10px 14px;
+            border-radius: 18px;
+            margin-top: 16px;
+        }
+        .lang-name {
+            text-align: right;
+            font-size: 10px;
+            color: #bcab99;
+            margin-top: 14px;
+            letter-spacing: 0.3px;
+        }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h1>Переводчик Seedance 2.0</h1>
+    <div class="sub">шуешьный язык / язык Seedance 2.0</div>
+
+    <div class="input-group">
+        <label>Слово или фраза</label>
+        <input type="text" id="wordInput" placeholder="например: мама, шутишь, пельмени" autocomplete="off">
+    </div>
+
+    <div class="result">
+        <div class="result-label">перевод</div>
+        <div class="translation" id="translationOutput">напиши слово</div>
+    </div>
+
+    <div class="hint">
+        примеры: мама, сестра, алгебра, хулиган, дневник
+    </div>
+    <div class="lang-name">
+        шуешьный язык / язык Seedance 2.0
+    </div>
+</div>
+
+<script>
+    const dictionary = {
+        "шутишь": "шуешь",
+        "шути": "шуй",
+        "шучу": "шую",
+        "шутите": "шуете",
+        "забыл": "забубел",
+        "забыла": "забубела",
+        "заболел": "забубел",
+        "заболела": "забубела",
+        "путёвка": "пайтёвка",
+        "путевка": "пайтёвка",
+        "дубай": "дибай",
+        "крутой": "крутвый",
+        "крутая": "крутвая",
+        "купить": "купыть",
+        "тяги": "носка",
+        "бархатные": "бархлятные",
+        "бархатный": "бархлятный",
+        "убийца": "уберин",
+        "убью": "уберину",
+        "сестра": "седра",
+        "обалдел": "оболыль",
+        "обалдела": "оболыла",
+        "привет": "привёт",
+        "прилететь": "припритеть",
+        "вальс": "валс",
+        "помада": "помара",
+        "косметика": "косметия",
+        "алгебра": "альгрия",
+        "школа": "кола",
+        "громче": "громне",
+        "издеваешься": "издевавыся",
+        "уйди": "ухды",
+        "наглая": "губнячка",
+        "наглый": "губнячок",
+        "аскорбинка": "оскаринка",
+        "спит": "спыт",
+        "спать": "спыть",
+        "8 марта": "баси марца",
+        "восьмое марта": "баси марца",
+        "мужчины": "мучели",
+        "мужики": "мучели",
+        "пельмени": "пыльманы",
+        "скушала": "скушИла",
+        "скушали": "скушИли",
+        "скушать": "скушИть",
+        "бургер": "бургер-быргер",
+        "спрятал": "спритАл",
+        "спрятала": "спритАла",
+        "верни": "вернуй",
+        "вернуть": "вернуй",
+        "стоишь": "стай",
+        "стоять": "стаять",
+        "кинотеатр": "кинема",
+        "угол": "угуд",
+        "брал": "берил",
+        "брала": "берила",
+        "пошлите": "пощите",
+        "попей": "полей",
+        "кошелек": "кошок",
+        "кошелёк": "кошок",
+        "косметичка": "космеечка",
+        "мама": "мамо",
+        "скоро": "скуит",
+        "вылезай": "вылясткик",
+        "прогулы": "прогули",
+        "сладкая": "сладая",
+        "выпьем": "выбудем",
+        "родители": "родите",
+        "пятого класса": "пятьего классо",
+        "5-го класса": "пятьего классо",
+        "хулиган": "банан",
+        "разбогатела": "разволонила",
+        "дневник": "дернярник"
+    };
+
+    function translatePhrase(phrase) {
+        let words = phrase.split(/(\s+|[.,!?;:()"'])/);
+        let result = [];
+        
+        for (let w of words) {
+            let lowerCheck = w.toLowerCase();
+            let isPunctuation = /^[.,!?;:()"'\s]+$/.test(w);
+            
+            if (isPunctuation) {
+                result.push(w);
+            } else if (dictionary[lowerCheck]) {
+                let originalCase = w;
+                let translated = dictionary[lowerCheck];
+                if (originalCase[0] === originalCase[0].toUpperCase() && originalCase[0] !== originalCase[0].toLowerCase()) {
+                    translated = translated[0].toUpperCase() + translated.slice(1);
+                }
+                result.push(translated);
+            } else {
+                result.push(w);
+            }
+        }
+        
+        return result.join('');
+    }
+
+    const input = document.getElementById('wordInput');
+    const outputDiv = document.getElementById('translationOutput');
+
+    function updateTranslation() {
+        let rawText = input.value;
+        if (rawText === "") {
+            outputDiv.innerHTML = "напиши слово";
+            return;
+        }
+        
+        let translation = translatePhrase(rawText);
+        outputDiv.innerHTML = translation;
+    }
+
+    input.addEventListener('input', updateTranslation);
+    updateTranslation();
+</script>
+</body>
+</html>
